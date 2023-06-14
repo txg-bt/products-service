@@ -156,7 +156,58 @@ router.post("/", authorization, async (req, res) => {
       userId: user_id,
     });
 
-    res.status(500).json({ error: "Something went wrong" });
+    res.status(500).send("Something went wrong");
+  }
+});
+
+router.put("/quantity/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { quantityUpdate } = req.body;
+
+    const existingProduct = await pool.query(
+      `SELECT * FROM products
+      WHERE id = $1`,
+      [id]
+    );
+
+    if (
+      quantityUpdate > 0 &&
+      existingProduct.rows?.[0].quantity < quantityUpdate
+    ) {
+      // 400
+      logger({
+        route: "/products/quantity/:id",
+        statusCode: 400,
+        message: "Not enough products in stock",
+      });
+
+      return res.status(400).send("Not enough products in stock");
+    }
+
+    const product = await pool.query(
+      `UPDATE products
+      SET quantity = quantity + $1
+      WHERE id = $2
+      RETURNING *`,
+      [quantityUpdate, id]
+    );
+
+    logger({
+      route: "/products/quantity/:id",
+      statusCode: 200,
+      message: "Product quantity updated successfully",
+    });
+
+    res.status(200).json(product.rows[0]);
+  } catch (err) {
+    logger({
+      route: "/products/quantity/:id",
+      statusCode: 500,
+      message: "Something went wrong",
+    });
+
+    res.status(500).send("Something went wrong");
   }
 });
 
