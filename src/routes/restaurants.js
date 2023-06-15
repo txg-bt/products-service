@@ -1,9 +1,7 @@
 const router = require("express").Router();
 const { pool } = require("../database/database");
 const authorization = require("../utils/authValidator");
-// const { logger } = require("../utils/logger");
-
-const logger = () => {};
+const { logger } = require("../utils/logger");
 
 const decorateRestaurantsWithDetails = require("../utils/decorateRestaurantsWithDetails");
 
@@ -17,7 +15,7 @@ router.get("/", async (req, res) => {
       ORDER BY created_at DESC
       OFFSET $2
       LIMIT $3`,
-      [city, offset, limit]
+      [`%${city || ""}%`, offset, limit]
     );
 
     logger({
@@ -39,6 +37,39 @@ router.get("/", async (req, res) => {
     });
 
     return res.status(500).send(err.message);
+  }
+});
+
+// receive a list of reservation_ids and return a list of restaurants and their details
+router.get("/bulk", async (req, res) => {
+  try {
+    const { reservation_ids } = req.query;
+
+    const restaurants = await pool.query(
+      `SELECT * FROM restaurants
+      WHERE restaurant_id IN (${reservation_ids})
+      ORDER BY created_at DESC`
+    );
+
+    logger({
+      route: "/restaurants/bulk",
+      statusCode: 200,
+      message: "Restaurants retrieved successfully",
+    });
+
+    const decoratedRestaurants = await decorateRestaurantsWithDetails(
+      restaurants.rows
+    );
+
+    res.status(200).json(decoratedRestaurants);
+  } catch (err) {
+    logger({
+      route: "/restaurants/bulk",
+      statusCode: 500,
+      message: err.message,
+    });
+
+    res.status(500).send(err.message);
   }
 });
 

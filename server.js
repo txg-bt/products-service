@@ -4,7 +4,7 @@ const cors = require("cors");
 
 app.use(cors());
 app.use(express.json());
-app.set("port", process.env.PORT || 3003);
+app.set("port", process.env.PORT || 3004);
 //app.set("trust proxy", true);
 
 app.use("/api/v1/reviews", require("./src/routes/reviews"));

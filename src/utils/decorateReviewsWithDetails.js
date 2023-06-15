@@ -30,7 +30,7 @@ async function decorateReviewsWithDetails(reviews) {
     });
   }
 
-  return [];
+  return reviews;
 }
 
 module.exports = decorateReviewsWithDetails;

@@ -4,7 +4,7 @@ const { logger } = require("./logger");
 
 async function decorateRestaurantsWithDetails(restaurants) {
   try {
-    const userIds = restaurants.map((product) => product.user_id);
+    const userIds = restaurants.map((restaurant) => restaurant.owner_id);
 
     const result = await axios.post(`${USER_DETAILS_URL}/userDetails/bulk`, {
       user_ids: userIds,
@@ -18,11 +18,13 @@ async function decorateRestaurantsWithDetails(restaurants) {
       message: "restaurants decorated successfully",
     });
 
-    return restaurants.map((product) => ({
-      ...product,
+    return restaurants.map((restaurant) => ({
+      ...restaurant,
       userDetails: users.find((user) => user.user_id === product.owner_id),
     }));
   } catch (err) {
+    console.log(err.message);
+
     logger({
       route: "/utils/decorateRestaurantsWithDetails",
       statusCode: 500,
@@ -30,7 +32,7 @@ async function decorateRestaurantsWithDetails(restaurants) {
     });
   }
 
-  return [];
+  return restaurants;
 }
 
 module.exports = decorateRestaurantsWithDetails;
