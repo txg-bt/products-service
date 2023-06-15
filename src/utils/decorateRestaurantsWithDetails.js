@@ -1,10 +1,10 @@
 const axios = require("axios");
 const USER_DETAILS_URL = require("../../constants").USER_DETAILS_URL;
-const logger = require("./logger");
+const { logger } = require("./logger");
 
-async function decorateProductsWithDetails(products) {
+async function decorateRestaurantsWithDetails(restaurants) {
   try {
-    const userIds = products.map((product) => product.user_id);
+    const userIds = restaurants.map((product) => product.user_id);
 
     const result = await axios.post(`${USER_DETAILS_URL}/userDetails/bulk`, {
       user_ids: userIds,
@@ -13,18 +13,18 @@ async function decorateProductsWithDetails(products) {
     const users = result.data;
 
     logger({
-      route: "/utils/decorateproductsWithDetails",
+      route: "/utils/decorateRestaurantsWithDetails",
       statusCode: 200,
-      message: "products decorated successfully",
+      message: "restaurants decorated successfully",
     });
 
-    return products.map((product) => ({
+    return restaurants.map((product) => ({
       ...product,
       userDetails: users.find((user) => user.user_id === product.owner_id),
     }));
   } catch (err) {
     logger({
-      route: "/utils/decorateproductsWithDetails",
+      route: "/utils/decorateRestaurantsWithDetails",
       statusCode: 500,
       message: "Something went wrong",
     });
@@ -33,4 +33,4 @@ async function decorateProductsWithDetails(products) {
   return [];
 }
 
-module.exports = decorateProductsWithDetails;
+module.exports = decorateRestaurantsWithDetails;

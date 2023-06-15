@@ -1,6 +1,6 @@
 const axios = require("axios");
 const USER_DETAILS_URL = require("../../constants").USER_DETAILS_URL;
-const logger = require("./logger");
+const { logger } = require("./logger");
 
 async function decorateReviewsWithDetails(reviews) {
   try {

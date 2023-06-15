@@ -8,7 +8,7 @@ app.set("port", process.env.PORT || 3003);
 //app.set("trust proxy", true);
 
 app.use("/api/v1/reviews", require("./src/routes/reviews"));
-app.use("/api/v1/products", require("./src/routes/products"));
+app.use("/api/v1/restaurants", require("./src/routes/restaurants"));
 
 app.get("*", async (req, res) => {
   res.status(404).send("404 Not Found");
