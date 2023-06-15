@@ -26,7 +26,7 @@ async function decorateRestaurantsWithDetails(restaurants) {
     logger({
       route: "/utils/decorateRestaurantsWithDetails",
       statusCode: 500,
-      message: "Something went wrong",
+      message: err.message,
     });
   }
 

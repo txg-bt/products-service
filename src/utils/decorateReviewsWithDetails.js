@@ -26,7 +26,7 @@ async function decorateReviewsWithDetails(reviews) {
     logger({
       route: "/utils/decorateReviewsWithDetails",
       statusCode: 500,
-      message: "Something went wrong",
+      message: err.message,
     });
   }
 
